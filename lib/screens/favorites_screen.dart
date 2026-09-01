@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../models/coffee_product.dart';
 import '../state/app_state.dart';
 import '../theme/app_colors.dart';
+import '../widgets/fade_slide_entrance.dart';
 import 'details_screen.dart';
 
 class FavoritesScreen extends StatefulWidget {
@@ -105,39 +106,44 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                   separatorBuilder: (context, index) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
                     final p = favoriteProducts[index];
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => DetailsScreen(product: p),
+                    return FadeSlideEntrance(
+                      delay: Duration(milliseconds: 60 + (index * 50)),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DetailsScreen(product: p),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.03),
+                                blurRadius: 10,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
                           ),
-                        );
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.03),
-                              blurRadius: 10,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          children: [
-                            Image.asset(
-                              p.image,
-                              width: 65,
-                              height: 65,
-                              fit: BoxFit.contain,
-                            ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: Column(
+                          child: Row(
+                            children: [
+                              Hero(
+                                tag: 'coffee_hero_${p.id}',
+                                child: Image.asset(
+                                  p.image,
+                                  width: 65,
+                                  height: 65,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
@@ -178,8 +184,9 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                           ],
                         ),
                       ),
-                    );
-                  },
+                    ),
+                  );
+                },
                 ),
               ),
           ],

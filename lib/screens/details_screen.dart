@@ -23,24 +23,11 @@ class _DetailsScreenState extends State<DetailsScreen>
   String _selectedIce = 'Normal';
   bool _isDescriptionExpanded = false;
 
-  late AnimationController _animController;
-  late Animation<double> _scaleAnim;
-
   @override
   void initState() {
     super.initState();
     _appState = AppState();
     _appState.addListener(_onStateChanged);
-
-    _animController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 600),
-    );
-    _scaleAnim = CurvedAnimation(
-      parent: _animController,
-      curve: Curves.easeOutBack,
-    );
-    _animController.forward();
   }
 
   void _onStateChanged() {
@@ -50,7 +37,6 @@ class _DetailsScreenState extends State<DetailsScreen>
   @override
   void dispose() {
     _appState.removeListener(_onStateChanged);
-    _animController.dispose();
     super.dispose();
   }
 
@@ -174,8 +160,10 @@ class _DetailsScreenState extends State<DetailsScreen>
                             ),
 
                             // Hero Top-down Coffee Cup
-                            ScaleTransition(
-                              scale: _scaleAnim,
+                            Hero(
+                              tag: 'coffee_hero_${widget.product.id}',
+                              createRectTween: (begin, end) =>
+                                  MaterialRectArcTween(begin: begin, end: end),
                               child: Image.asset(
                                 widget.product.image,
                                 width: size.width * 0.74,

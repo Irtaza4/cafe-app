@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/coffee_product.dart';
 import '../theme/app_colors.dart';
+import '../widgets/fade_slide_entrance.dart';
 import 'details_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -47,13 +48,24 @@ class _HomeScreenState extends State<HomeScreen> {
     Navigator.push(
       context,
       PageRouteBuilder(
-        transitionDuration: const Duration(milliseconds: 350),
+        transitionDuration: const Duration(milliseconds: 450),
+        reverseTransitionDuration: const Duration(milliseconds: 400),
         pageBuilder: (context, animation, secondaryAnimation) =>
             DetailsScreen(product: product),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          final curved = CurvedAnimation(
+            parent: animation,
+            curve: Curves.fastOutSlowIn,
+          );
           return FadeTransition(
-            opacity: animation,
-            child: child,
+            opacity: curved,
+            child: SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(0.0, 0.05),
+                end: Offset.zero,
+              ).animate(curved),
+              child: child,
+            ),
           );
         },
       ),
@@ -74,115 +86,165 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               const SizedBox(height: 12),
 
-              // 1. Top Header: User Profile Avatar & Notification Bell
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      // Avatar
-                      Container(
-                        width: 46,
-                        height: 46,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                        ),
-                        child: ClipOval(
-                          child: Image.asset(
-                            'assets/images/user_avatar.png',
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                Container(
-                              color: AppColors.warmBeige,
-                              child: const Icon(Icons.person, color: AppColors.deepEspresso),
-                            ),
+              // 1. Top Header (Avatar & Notification Bell) with entrance animation
+              FadeSlideEntrance(
+                delay: const Duration(milliseconds: 60),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        // Avatar
+                        Container(
+                          width: 46,
+                          height: 46,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
                           ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Jhon Anderson',
-                            style: GoogleFonts.inter(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.deepEspresso,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Row(
-                            children: [
-                              Text(
-                                'Good Morning',
-                                style: GoogleFonts.inter(
-                                  fontSize: 12,
-                                  color: AppColors.coffeeBrown,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                          child: ClipOval(
+                            child: Image.asset(
+                              'assets/images/user_avatar.png',
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Container(
+                                color: AppColors.warmBeige,
+                                child: const Icon(Icons.person, color: AppColors.deepEspresso),
                               ),
-                              const SizedBox(width: 4),
-                              const Text('👋', style: TextStyle(fontSize: 12)),
-                            ],
+                            ),
                           ),
-                        ],
-                      ),
-                    ],
-                  ),
-
-                  // Notification Bell with Badge
-                  Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.05),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
+                        ),
+                        const SizedBox(width: 12),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Jhon Anderson',
+                              style: GoogleFonts.inter(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.deepEspresso,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Row(
+                              children: [
+                                Text(
+                                  'Good Morning',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 12,
+                                    color: AppColors.coffeeBrown,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                const Text('👋', style: TextStyle(fontSize: 12)),
+                              ],
                             ),
                           ],
                         ),
-                        child: const Icon(
-                          Icons.notifications_none_rounded,
-                          size: 22,
-                          color: AppColors.deepEspresso,
-                        ),
-                      ),
-                      Positioned(
-                        top: 10,
-                        right: 12,
-                        child: Container(
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
-                            color: Colors.redAccent,
+                      ],
+                    ),
+
+                    // Notification Bell with Badge
+                    Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
                             shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.05),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.notifications_none_rounded,
+                            size: 22,
+                            color: AppColors.deepEspresso,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                        Positioned(
+                          top: 10,
+                          right: 12,
+                          child: Container(
+                            width: 8,
+                            height: 8,
+                            decoration: const BoxDecoration(
+                              color: Colors.redAccent,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
 
               const SizedBox(height: 20),
 
-              // 2. Search Bar & Filter Button
-              Row(
-                children: [
-                  Expanded(
-                    child: Container(
+              // 2. Search Bar & Filter Button with entrance animation
+              FadeSlideEntrance(
+                delay: const Duration(milliseconds: 120),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        height: 50,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(25),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.04),
+                              blurRadius: 10,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.search_rounded,
+                              color: Color(0xFF9E8E81),
+                              size: 22,
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: TextField(
+                                controller: _searchController,
+                                onChanged: (val) => setState(() => _searchQuery = val),
+                                decoration: InputDecoration(
+                                  hintText: 'Search',
+                                  hintStyle: GoogleFonts.inter(
+                                    color: const Color(0xFF9E8E81),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                  border: InputBorder.none,
+                                  isDense: true,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    // Filter Tuner Button
+                    Container(
+                      width: 50,
                       height: 50,
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(25),
+                        shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withValues(alpha: 0.04),
@@ -191,255 +253,245 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ],
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.search_rounded,
-                            color: Color(0xFF9E8E81),
-                            size: 22,
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: TextField(
-                              controller: _searchController,
-                              onChanged: (val) => setState(() => _searchQuery = val),
-                              decoration: InputDecoration(
-                                hintText: 'Search',
-                                hintStyle: GoogleFonts.inter(
-                                  color: const Color(0xFF9E8E81),
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                                border: InputBorder.none,
-                                isDense: true,
-                              ),
-                            ),
-                          ),
-                        ],
+                      child: const Icon(
+                        Icons.tune_rounded,
+                        color: AppColors.deepEspresso,
+                        size: 20,
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  // Filter Tuner Button
-                  Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.04),
-                          blurRadius: 10,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.tune_rounded,
-                      color: AppColors.deepEspresso,
-                      size: 20,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
 
               const SizedBox(height: 22),
 
-              // 3. Hero Promotional Banner Card (70% OFF Super Discount)
-              Container(
-                width: double.infinity,
-                height: 145,
-                decoration: BoxDecoration(
-                  color: AppColors.promoCardBg,
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.warmBeige.withValues(alpha: 0.4),
-                      blurRadius: 16,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Stack(
-                  children: [
-                    // Curved decorative shape
-                    Positioned(
-                      right: -20,
-                      top: -20,
-                      bottom: -20,
-                      child: Container(
-                        width: 180,
-                        decoration: BoxDecoration(
-                          color: AppColors.warmBeige.withValues(alpha: 0.35),
-                          shape: BoxShape.circle,
+              // 3. Hero Promotional Banner Card with entrance animation
+              FadeSlideEntrance(
+                delay: const Duration(milliseconds: 180),
+                child: Container(
+                  width: double.infinity,
+                  height: 145,
+                  decoration: BoxDecoration(
+                    color: AppColors.promoCardBg,
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.warmBeige.withValues(alpha: 0.4),
+                        blurRadius: 16,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Stack(
+                    children: [
+                      // Curved decorative shape
+                      Positioned(
+                        right: -20,
+                        top: -20,
+                        bottom: -20,
+                        child: Container(
+                          width: 180,
+                          decoration: BoxDecoration(
+                            color: AppColors.warmBeige.withValues(alpha: 0.35),
+                            shape: BoxShape.circle,
+                          ),
                         ),
                       ),
-                    ),
 
-                    // Content on left
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Today Only',
-                            style: GoogleFonts.inter(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.coffeeBrown,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            '70% OFF',
-                            style: GoogleFonts.inter(
-                              fontSize: 22,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.deepEspresso,
-                              letterSpacing: -0.5,
-                            ),
-                          ),
-                          const SizedBox(height: 1),
-                          Text(
-                            'Super Discount',
-                            style: GoogleFonts.inter(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.coffeeBrown,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          // Order Now Button
-                          SizedBox(
-                            height: 32,
-                            child: ElevatedButton(
-                              onPressed: () => _openDetails(_allProducts[0]),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primaryOrange,
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(horizontal: 16),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                elevation: 0,
-                              ),
-                              child: Text(
-                                'Order Now',
-                                style: GoogleFonts.inter(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                      // Content on left
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Today Only',
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.coffeeBrown,
                               ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 2),
+                            Text(
+                              '70% OFF',
+                              style: GoogleFonts.inter(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.deepEspresso,
+                                letterSpacing: -0.5,
+                              ),
+                            ),
+                            const SizedBox(height: 1),
+                            Text(
+                              'Super Discount',
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.coffeeBrown,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            // Order Now Button
+                            SizedBox(
+                              height: 32,
+                              child: ElevatedButton(
+                                onPressed: () => _openDetails(_allProducts[0]),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.primaryOrange,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  elevation: 0,
+                                ),
+                                child: Text(
+                                  'Order Now',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
 
-                    // Splash Coffee Cup Image on Right
-                    Positioned(
-                      right: 12,
-                      top: 10,
-                      bottom: 10,
-                      child: Image.asset(
-                        'assets/images/promo_banner.png',
-                        width: 135,
-                        fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const SizedBox.shrink(),
+                      // Splash Coffee Cup Image on Right
+                      Positioned(
+                        right: 12,
+                        top: 10,
+                        bottom: 10,
+                        child: Image.asset(
+                          'assets/images/promo_banner.png',
+                          width: 135,
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const SizedBox.shrink(),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
 
               const SizedBox(height: 24),
 
-              // 4. Categories Header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Categories',
-                    style: GoogleFonts.inter(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.deepEspresso,
+              // 4. Categories Header with entrance animation
+              FadeSlideEntrance(
+                delay: const Duration(milliseconds: 240),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Categories',
+                      style: GoogleFonts.inter(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.deepEspresso,
+                      ),
                     ),
-                  ),
-                  Text(
-                    'See all',
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.primaryOrange,
+                    Text(
+                      'See all',
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.primaryOrange,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
 
               const SizedBox(height: 14),
 
-              // 5. Category Chips (Horizontal list)
-              SizedBox(
-                height: 38,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  clipBehavior: Clip.none,
-                  itemCount: _categories.length,
-                  separatorBuilder: (context, index) => const SizedBox(width: 8),
-                  itemBuilder: (context, index) {
-                    final cat = _categories[index];
-                    final isSel = cat == _selectedCategory;
+              // 5. Category Chips with entrance animation
+              FadeSlideEntrance(
+                delay: const Duration(milliseconds: 280),
+                child: SizedBox(
+                  height: 38,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    clipBehavior: Clip.none,
+                    itemCount: _categories.length,
+                    separatorBuilder: (context, index) => const SizedBox(width: 8),
+                    itemBuilder: (context, index) {
+                      final cat = _categories[index];
+                      final isSel = cat == _selectedCategory;
 
-                    return GestureDetector(
-                      onTap: () {
-                        HapticFeedback.selectionClick();
-                        setState(() => _selectedCategory = cat);
-                      },
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        padding: const EdgeInsets.symmetric(horizontal: 18),
-                        decoration: BoxDecoration(
-                          color: isSel ? AppColors.primaryOrange : Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            if (isSel)
-                              BoxShadow(
-                                color: AppColors.primaryOrange.withValues(alpha: 0.3),
-                                blurRadius: 8,
-                                offset: const Offset(0, 3),
-                              )
-                            else
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.03),
-                                blurRadius: 4,
+                      return GestureDetector(
+                        onTap: () {
+                          HapticFeedback.selectionClick();
+                          setState(() => _selectedCategory = cat);
+                        },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          padding: const EdgeInsets.symmetric(horizontal: 18),
+                          decoration: BoxDecoration(
+                            color: isSel ? AppColors.primaryOrange : Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              if (isSel)
+                                BoxShadow(
+                                  color: AppColors.primaryOrange.withValues(alpha: 0.3),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 3),
+                                )
+                              else
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.03),
+                                  blurRadius: 4,
+                                ),
+                            ],
+                          ),
+                          child: Center(
+                            child: Text(
+                              cat,
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                fontWeight: isSel ? FontWeight.w700 : FontWeight.w500,
+                                color: isSel ? Colors.white : AppColors.coffeeBrown,
                               ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Text(
-                            cat,
-                            style: GoogleFonts.inter(
-                              fontSize: 13,
-                              fontWeight: isSel ? FontWeight.w700 : FontWeight.w500,
-                              color: isSel ? Colors.white : AppColors.coffeeBrown,
                             ),
                           ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               ),
 
-              const SizedBox(height: 22),
+              const SizedBox(height: 18),
 
-              // 6. 2-Column Product Grid
+              // Hint: Drag to Cart
+              FadeSlideEntrance(
+                delay: const Duration(milliseconds: 320),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.touch_app_rounded,
+                      size: 14,
+                      color: AppColors.primaryOrange,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Hold & drag any drink down to Cart tab',
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.coffeeBrown.withValues(alpha: 0.75),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 14),
+
+              // 6. 2-Column Product Grid with Drag-and-Drop + Hero Animation
               GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -452,11 +504,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 itemBuilder: (context, index) {
                   final product = _filteredProducts[index];
-                  return _buildProductCard(product);
+                  return FadeSlideEntrance(
+                    delay: Duration(milliseconds: 320 + (index * 60)),
+                    child: _buildProductCard(product),
+                  );
                 },
               ),
 
-              const SizedBox(height: 100), // padding for bottom nav bar
+              const SizedBox(height: 100),
             ],
           ),
         ),
@@ -465,130 +520,162 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildProductCard(CoffeeProduct product) {
-    return GestureDetector(
-      onTap: () => _openDetails(product),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
+    return LongPressDraggable<CoffeeProduct>(
+      data: product,
+      delay: const Duration(milliseconds: 140),
+      onDragStarted: () => HapticFeedback.selectionClick(),
+      // Drag ONLY the pure product image — NO white container!
+      feedback: Material(
+        color: Colors.transparent,
+        child: SizedBox(
+          width: 95,
+          height: 95,
+          child: Image.asset(
+            product.image,
+            fit: BoxFit.contain,
+          ),
         ),
-        child: Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Top Coffee Image
-                  Expanded(
-                    child: Center(
-                      child: Image.asset(
-                        product.image,
-                        fit: BoxFit.contain,
-                        filterQuality: FilterQuality.high,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Icon(Icons.coffee, size: 60, color: AppColors.primaryOrange),
-                      ),
-                    ),
-                  ),
+      ),
+      // While dragging, the card stays in place, only the cup is lifted
+      childWhenDragging: _buildCardContent(product, isCupHidden: true),
+      // Regular interactive card
+      child: GestureDetector(
+        onTap: () => _openDetails(product),
+        child: _buildCardContent(product, isCupHidden: false),
+      ),
+    );
+  }
 
-                  const SizedBox(height: 8),
-
-                  // Product Name
-                  Text(
-                    product.name,
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.deepEspresso,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-
-                  const SizedBox(height: 4),
-
-                  // Price and Action Button Row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            '\$${product.price.toInt() == product.price ? product.price.toInt().toString() : product.price.toStringAsFixed(2)}',
-                            style: GoogleFonts.inter(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.deepEspresso,
-                            ),
-                          ),
-                          if (product.originalPrice != null) ...[
-                            const SizedBox(width: 4),
-                            Text(
-                              '\$${product.originalPrice!.toInt()}',
-                              style: GoogleFonts.inter(
-                                fontSize: 11,
-                                decoration: TextDecoration.lineThrough,
-                                color: const Color(0xFFB0A298),
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-
-                      // Circular Orange Arrow Button
-                      Container(
-                        width: 28,
-                        height: 28,
-                        decoration: const BoxDecoration(
-                          color: AppColors.primaryOrange,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.arrow_forward_rounded,
-                          size: 15,
-                          color: Colors.white,
+  Widget _buildCardContent(CoffeeProduct product, {bool isCupHidden = false}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Top Coffee Image with Hero Animation
+                Expanded(
+                  child: Center(
+                    child: Opacity(
+                      opacity: isCupHidden ? 0.0 : 1.0,
+                      child: Hero(
+                        tag: 'coffee_hero_${product.id}',
+                        createRectTween: (begin, end) =>
+                            MaterialRectArcTween(begin: begin, end: end),
+                        child: Image.asset(
+                          product.image,
+                          fit: BoxFit.contain,
+                          filterQuality: FilterQuality.high,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(Icons.coffee, size: 60, color: AppColors.primaryOrange),
                         ),
                       ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            // Badge Tag (e.g. TOP SALE / 9% OFF)
-            if (product.tag != null)
-              Positioned(
-                top: 8,
-                left: 8,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: product.tag == 'TOP SALE'
-                        ? AppColors.tagBlue
-                        : (product.tag == '9% OFF' ? AppColors.tagPink : AppColors.primaryOrange),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    product.tag!,
-                    style: GoogleFonts.inter(
-                      fontSize: 8,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                      letterSpacing: 0.2,
                     ),
                   ),
                 ),
+
+                const SizedBox(height: 8),
+
+                // Product Name
+                Text(
+                  product.name,
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.deepEspresso,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+
+                const SizedBox(height: 4),
+
+                // Price and Action Button Row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          '\$${product.price.toInt() == product.price ? product.price.toInt().toString() : product.price.toStringAsFixed(2)}',
+                          style: GoogleFonts.inter(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.deepEspresso,
+                          ),
+                        ),
+                        if (product.originalPrice != null) ...[
+                          const SizedBox(width: 4),
+                          Text(
+                            '\$${product.originalPrice!.toInt()}',
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              decoration: TextDecoration.lineThrough,
+                              color: const Color(0xFFB0A298),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+
+                    // Circular Orange Arrow Button
+                    Container(
+                      width: 28,
+                      height: 28,
+                      decoration: const BoxDecoration(
+                        color: AppColors.primaryOrange,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.arrow_forward_rounded,
+                        size: 15,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          // Badge Tag (e.g. TOP SALE / 9% OFF)
+          if (product.tag != null)
+            Positioned(
+              top: 8,
+              left: 8,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                decoration: BoxDecoration(
+                  color: product.tag == 'TOP SALE'
+                      ? AppColors.tagBlue
+                      : (product.tag == '9% OFF' ? AppColors.tagPink : AppColors.primaryOrange),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  product.tag!,
+                  style: GoogleFonts.inter(
+                    fontSize: 8,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                    letterSpacing: 0.2,
+                  ),
+                ),
               ),
-          ],
-        ),
+            ),
+        ],
       ),
     );
   }

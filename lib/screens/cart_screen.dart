@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../state/app_state.dart';
 import '../theme/app_colors.dart';
+import '../widgets/fade_slide_entrance.dart';
 import 'order_tracking_screen.dart';
 
 class CartScreen extends StatefulWidget {
@@ -213,37 +214,39 @@ class _CartScreenState extends State<CartScreen> {
                         separatorBuilder: (context, index) => const SizedBox(height: 12),
                         itemBuilder: (context, index) {
                           final item = cart[index];
-                          return Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(18),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.03),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              children: [
-                                // Item Image
-                                Container(
-                                  width: 65,
-                                  height: 65,
-                                  decoration: BoxDecoration(
-                                    color: AppColors.warmBeige.withValues(alpha: 0.2),
-                                    borderRadius: BorderRadius.circular(14),
+                          return FadeSlideEntrance(
+                            delay: Duration(milliseconds: 80 + (index * 50)),
+                            child: Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(18),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.03),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 2),
                                   ),
-                                  padding: const EdgeInsets.all(4),
-                                  child: Image.asset(
-                                    item.product.image,
-                                    fit: BoxFit.contain,
-                                    errorBuilder: (context, error, stackTrace) =>
-                                        const Icon(Icons.coffee, color: AppColors.primaryOrange),
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  // Item Image
+                                  Container(
+                                    width: 65,
+                                    height: 65,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.warmBeige.withValues(alpha: 0.2),
+                                      borderRadius: BorderRadius.circular(14),
+                                    ),
+                                    padding: const EdgeInsets.all(4),
+                                    child: Image.asset(
+                                      item.product.image,
+                                      fit: BoxFit.contain,
+                                      errorBuilder: (context, error, stackTrace) =>
+                                          const Icon(Icons.coffee, color: AppColors.primaryOrange),
+                                    ),
                                   ),
-                                ),
 
                                 const SizedBox(width: 12),
 
@@ -329,8 +332,9 @@ class _CartScreenState extends State<CartScreen> {
                                 ),
                               ],
                             ),
-                          );
-                        },
+                          ),
+                        );
+                      },
                       ),
 
                       const SizedBox(height: 20),
